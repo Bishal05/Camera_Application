@@ -1,5 +1,12 @@
 let videoElement = document.querySelector("video");
 let recordBtn = document.querySelector(".record");
+let captureImgBtn = document.querySelector(".click");
+let filterArr = document.querySelectorAll(".filter");
+let filterOverlay = document.querySelector(".filter_overlay");
+let timings = document.querySelector(".timing");
+let filterColor="";
+let counter=0;
+let clearObj;
 
 // constraits define the access we need from out device on that browser
 // for eg for stream we need access of camera and audio in our browser
@@ -67,11 +74,62 @@ recordBtn.addEventListener("click", function () {
         // start() is provided by mediarecordingObjectForCurrStream when we call it recording start.
         mediarecordingObjectForCurrStream.start();
         recordBtn.innerText = "recording";
+        startTimer();
     }
     else {
         // stop() is provided by mediarecordingObjectForCurrStream when we call it recording stops.
         mediarecordingObjectForCurrStream.stop();
         recordBtn.innerText = "record";
+        stopTimer();
     }
     isRecording = !isRecording
 })
+
+captureImgBtn.addEventListener("click",function(){
+    console.log("clicked")
+    let canvas=document.createElement("canvas");
+    canvas.height=videoElement.videoHeight;
+    canvas.width=videoElement.videoWidth;
+    let tool=canvas.getContext("2d");
+    tool.drawImage(videoElement,0,0);
+    if(filterColor){
+        tool.fillStyle=filterColor;
+        tool.fillRect(0, 0,canvas.width,canvas.height);
+    }
+    let url=canvas.toDataURL();
+    let a=document.createElement("a");
+    a.download="file.png";
+    a.href=url;
+    a.click();
+    a.remove();
+})
+
+for(let i=0;i<filterArr.length;i++){
+    filterArr[i].addEventListener("click",function(){
+        filterColor = filterArr[i].style.backgroundColor;
+        filterOverlay.style.backgroundColor = filterColor;
+    })
+}
+
+function startTimer(){
+    timings.style.display="block";
+
+    function fn(){
+        let hours = Number.parseInt(counter / 3600);
+        let RemSeconds = counter % 3600;
+        let mins = Number.parseInt(RemSeconds / 60);
+        let seconds = RemSeconds % 60;
+        hours = hours < 10 ? `0${hours}` : hours;
+        mins = mins < 10 ? `0${mins}` : `${mins}`;
+        seconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+        timings.innerText = `${hours}:${mins}:${seconds}`
+        counter++;
+    }
+
+    clearObj=setInterval(fn,1000);
+}
+
+function stopTimer(){
+    timings.style.display="none";
+    clearInterval(clearObj);
+}
