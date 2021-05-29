@@ -73,13 +73,15 @@ recordBtn.addEventListener("click", function () {
     if (isRecording == false) {
         // start() is provided by mediarecordingObjectForCurrStream when we call it recording start.
         mediarecordingObjectForCurrStream.start();
-        recordBtn.innerText = "recording";
+        // recordBtn.innerText = "recording";
+        recordBtn.classList.add("record-animation");
         startTimer();
     }
     else {
         // stop() is provided by mediarecordingObjectForCurrStream when we call it recording stops.
         mediarecordingObjectForCurrStream.stop();
-        recordBtn.innerText = "record";
+        // recordBtn.innerText = "record";
+        recordBtn.classList.remove("record-animation");
         stopTimer();
     }
     isRecording = !isRecording
